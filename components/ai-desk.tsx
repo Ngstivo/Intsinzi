@@ -6,10 +6,10 @@ import { Tabs } from "./demo-ui";
 
 type Answer={prompt:string;article:typeof articles[number]|undefined};
 const documents=[
-  "Order CF-1042. The item is unused and I would like to return it.",
-  "Order CF-2081. Tracking has not updated and my delivery is overdue.",
-  "I cannot sign in. The password reset email has not arrived.",
-];
+  ["Order CF-1042. The item is unused and I would like to return it.","Zamówienie CF-1042. Produkt jest nieużywany i chcę go zwrócić."],
+  ["Order CF-2081. Tracking has not updated and my delivery is overdue.","Zamówienie CF-2081. Śledzenie nie zostało zaktualizowane, a dostawa jest opóźniona."],
+  ["I cannot sign in. The password reset email has not arrived.","Nie mogę się zalogować. Wiadomość z linkiem do resetowania hasła nie dotarła."],
+] as const;
 export function AiDesk({lang}:{lang:Lang}) {
   const [answers,setAnswers]=useState<Answer[]>([]);
   const [query,setQuery]=useState("");
@@ -18,7 +18,7 @@ export function AiDesk({lang}:{lang:Lang}) {
   const [tickets,setTickets]=useState<{id:number;approved:boolean}[]>([]);
   const queued=analysis && tickets.some(ticket=>ticket.id===analysis.id);
   const msg=(en:string,pl:string)=>tr(lang,[en,pl]);
-  const documentText=lang==="pl"?["Zamówienie CF-1042. Produkt jest nieużywany i chcę go zwrócić.","Zamówienie CF-2081. Śledzenie nie zostało zaktualizowane, a dostawa jest opóźniona.","Nie mogę się zalogować. Wiadomość z linkiem do resetowania hasła nie dotarła."]:documents;
+  const documentText=documents.map(item=>tr(lang,item));
   function ask(e:FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form=e.currentTarget;
@@ -33,8 +33,8 @@ export function AiDesk({lang}:{lang:Lang}) {
       <form className="demo-form" onSubmit={ask}><label>{msg("Sample question","Przykładowe pytanie")}<input name="prompt" required maxLength={260}/></label><button className="button primary" type="submit">{msg("Ask assistant","Zapytaj asystenta")}</button></form>
     </>}
     {tab===1&&<><h2>{msg("Knowledge base","Baza wiedzy")}</h2><label className="search-field">{msg("Search articles","Szukaj artykułów")}<input type="search" value={query} onChange={e=>setQuery(e.target.value)}/></label><div className="knowledge">{articles.filter(a=>`${tr(lang,a.title)} ${tr(lang,a.body)}`.toLowerCase().includes(query.trim().toLowerCase())).map(a=><details className="panel" key={a.title[0]}><summary>{tr(lang,a.title)}</summary><p>{tr(lang,a.body)}</p></details>)}</div>{!articles.some(a=>`${tr(lang,a.title)} ${tr(lang,a.body)}`.toLowerCase().includes(query.trim().toLowerCase()))&&<p>{msg("No matching articles.","Brak pasujących artykułów.")}</p>}</>}
-    {tab===2&&<><h2>{msg("Document processing","Przetwarzanie dokumentów")}</h2><label className="search-field">{msg("Sample document","Przykładowy dokument")}<select value={document} onChange={e=>{setDocument(Number(e.target.value));setAnalysis(undefined);}}>{articles.map((a,i)=><option value={i} key={a.title[0]}>{tr(lang,a.title)}</option>)}</select></label><blockquote className="panel document">{documentText[document]}</blockquote><button type="button" className="button primary" onClick={()=>setAnalysis({id:document,article:articles.find(a=>a.keywords.test(documents[document]))??articles[document]})}>{msg("Process sample","Przetwórz próbkę")}</button>
-      {analysis&&<div className="panel document"><p>{msg("Category","Kategoria")} <strong>{tr(lang,analysis.article.title)}</strong></p><p>{msg("Order reference","Numer zamówienia")} <strong>{documents[analysis.id].match(/CF-\d+/)?.[0]??"—"}</strong></p><p>{tr(lang,analysis.article.body)}</p><button className="button secondary" type="button" disabled={queued} onClick={()=>setTickets(list=>list.some(ticket=>ticket.id===analysis.id)?list:[...list,{id:analysis.id,approved:false}])}>{msg("Queue draft for review","Dodaj szkic do kolejki")}</button><p role="status">{queued&&msg("Draft is in the support queue.","Szkic znajduje się w kolejce wsparcia.")}</p></div>}
+    {tab===2&&<><h2>{msg("Document processing","Przetwarzanie dokumentów")}</h2><label className="search-field">{msg("Sample document","Przykładowy dokument")}<select value={document} onChange={e=>{setDocument(Number(e.target.value));setAnalysis(undefined);}}>{articles.map((a,i)=><option value={i} key={a.title[0]}>{tr(lang,a.title)}</option>)}</select></label><blockquote className="panel document">{documentText[document]}</blockquote><button type="button" className="button primary" onClick={()=>setAnalysis({id:document,article:articles.find(a=>a.keywords.test(documents[document][0]))??articles[document]})}>{msg("Process sample","Przetwórz próbkę")}</button>
+      {analysis&&<div className="panel document"><p>{msg("Category","Kategoria")} <strong>{tr(lang,analysis.article.title)}</strong></p><p>{msg("Order reference","Numer zamówienia")} <strong>{documents[analysis.id][0].match(/CF-\d+/)?.[0]??"—"}</strong></p><p>{tr(lang,analysis.article.body)}</p><button className="button secondary" type="button" disabled={queued} onClick={()=>setTickets(list=>list.some(ticket=>ticket.id===analysis.id)?list:[...list,{id:analysis.id,approved:false}])}>{msg("Queue draft for review","Dodaj szkic do kolejki")}</button><p role="status">{queued&&msg("Draft is in the support queue.","Szkic znajduje się w kolejce wsparcia.")}</p></div>}
     </>}
     {tab===3&&<><h2>{msg("Support queue","Kolejka wsparcia")}</h2>{tickets.length?tickets.map(ticket=><div className="panel document" key={ticket.id}><h3>{tr(lang,articles[ticket.id].title)}</h3><p>{tr(lang,articles[ticket.id].body)}</p><p role="status">{ticket.approved?msg("Approved in this demo.","Zatwierdzono w demonstracji."):msg("Waiting for human review.","Oczekuje na weryfikację.")}</p>{!ticket.approved&&<button type="button" className="button primary" onClick={()=>setTickets(list=>list.map(item=>item.id===ticket.id?{...item,approved:true}:item))}>{msg("Approve draft","Zatwierdź szkic")}</button>}</div>):<p>{msg("Process a sample document and queue its draft to try the review workflow.","Przetwórz przykładowy dokument i dodaj szkic do kolejki, aby przetestować weryfikację.")}</p>}</>}
   </>}</Tabs></>;

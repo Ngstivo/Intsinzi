@@ -1,6 +1,6 @@
 "use client";
 import { useState, type ReactNode } from "react";
-import { tr, type Lang, type Pair } from "../lib/content";
+import { locales, tr, type Lang, type Pair } from "../lib/localization";
 
 export function Tabs({lang,items,children}:{lang:Lang;items:readonly Pair[];children:(tab:number)=>ReactNode}) {
   const [tab,setTab]=useState(0);
@@ -17,5 +17,5 @@ export function Bars({items}:{items:{name:string;value:number;formatted?:string}
   return <ul className="report-bars">{items.map(i=><li key={i.name}><div><span>{i.name}</span><strong>{i.formatted??i.value}</strong></div><div className="bar-track" aria-hidden="true"><div style={{width:`${i.value/max*100}%`}}/></div></li>)}</ul>;
 }
 export function money(lang:Lang,value:number) {
-  return new Intl.NumberFormat(lang==="pl"?"pl-PL":"en-GB",{style:"currency",currency:"PLN",maximumFractionDigits:0}).format(value);
+  return new Intl.NumberFormat(locales[lang].region,{style:"currency",currency:"PLN",maximumFractionDigits:0}).format(value);
 }

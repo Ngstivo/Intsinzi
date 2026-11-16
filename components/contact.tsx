@@ -2,6 +2,7 @@
 import { useState, type FormEvent } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { email, services, tr, type Lang, type Pair } from "../lib/content";
+import { isLanguage, languages, locales } from "../lib/localization";
 
 export function ContactForm({lang}: {lang: Lang}) {
   const [draft,setDraft] = useState("");
@@ -13,7 +14,11 @@ export function ContactForm({lang}: {lang: Lang}) {
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const body = Object.entries(labels).map(([key,label]) => `${tr(lang,label)}: ${(key === "language" ? (data.get(key) === "pl" ? "Polski" : "English") : String(data.get(key) ?? "")).trim()}`).join("\r\n\r\n");
+    const preferredLanguage = String(data.get("language") ?? lang);
+    const body = Object.entries(labels).map(([key,label]) => {
+      const value = key === "language" && isLanguage(preferredLanguage) ? locales[preferredLanguage].name : String(data.get(key) ?? "").trim();
+      return `${tr(lang,label)}: ${value}`;
+    }).join("\r\n\r\n");
     const source = new URLSearchParams(window.location.search).get("demo") ?? "";
     const ref = source ? `\r\n\r\n${tr(lang,["Reference demo","Demonstracja referencyjna"])}: ${source.slice(0,80)}` : "";
     const url = `mailto:${email}?subject=${encodeURIComponent(tr(lang,["New project enquiry","Zapytanie o projekt"]))}&body=${encodeURIComponent(body + ref)}`;
@@ -21,14 +26,15 @@ export function ContactForm({lang}: {lang: Lang}) {
     window.location.href = url;
   }
   const label = (key: string) => tr(lang,labels[key]);
+  const budget = new Intl.NumberFormat(locales[lang].region,{useGrouping:"always"});
   return <form className="contact-form panel" onSubmit={submit}>
     <div className="field-grid">
       <label>{label("name")}<input name="name" autoComplete="name" required maxLength={100}/></label>
       <label>{label("email")}<input name="email" type="email" autoComplete="email" required maxLength={150}/></label>
       <label>{label("company")}<input name="company" autoComplete="organization" maxLength={120}/></label>
       <label>{label("type")}<select name="type" required defaultValue=""><option value="" disabled>{tr(lang,["Select project type","Wybierz typ projektu"])}</option>{services.map(s => <option key={s.icon}>{tr(lang,s.name)}</option>)}<option>{tr(lang,["Other","Inny"])}</option></select></label>
-      <label>{label("budget")}<select name="budget" required defaultValue=""><option value="" disabled>{tr(lang,["Select a range","Wybierz przedział"])}</option><option>2,000–4,999 PLN</option><option>5,000–9,999 PLN</option><option>10,000+ PLN</option><option>{tr(lang,["To be discussed","Do ustalenia"])}</option></select></label>
-      <label>{label("language")}<select name="language" defaultValue={lang}><option value="en">English</option><option value="pl">Polski</option></select></label>
+      <label>{label("budget")}<select name="budget" required defaultValue=""><option value="" disabled>{tr(lang,["Select a range","Wybierz przedział"])}</option><option>{budget.format(2000)}–{budget.format(4999)} PLN</option><option>{budget.format(5000)}–{budget.format(9999)} PLN</option><option>{budget.format(10000)}+ PLN</option><option>{tr(lang,["To be discussed","Do ustalenia"])}</option></select></label>
+      <label>{label("language")}<select name="language" defaultValue={lang}>{languages.map(locale => <option key={locale} value={locale} lang={locale}>{locales[locale].name}</option>)}</select></label>
     </div>
     <label>{label("description")}<textarea name="description" rows={6} maxLength={1400} required placeholder={tr(lang,["What should the product help you do?","Co ma umożliwiać Twój produkt?"])}/></label>
     <button className="button primary" type="submit">{tr(lang,["Open email draft","Otwórz szkic wiadomości"])}<ArrowUpRight size={17}/></button>

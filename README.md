@@ -1,6 +1,6 @@
 # Intsinzi Digital Studio
 
-A bilingual studio website with four interactive software concepts. Built with Next.js App Router, React, TypeScript, Tailwind CSS, and Lucide. The production build exports static files to `out/`.
+A six-language studio website with four interactive software concepts. Built with Next.js App Router, React, TypeScript, Tailwind CSS, and Lucide. The production build exports static files to `out/`.
 
 ## Run locally
 
@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000/`. The English homepage is also available at `/en/`, and the Polish homepage is at `/pl/`.
+Open `http://localhost:3000/`. English, Polish, French, German, Spanish, and Italian are available under `/en/`, `/pl/`, `/fr/`, `/de/`, `/es/`, and `/it/`.
 
 ## Build and preview
 
@@ -39,7 +39,7 @@ For example, in PowerShell use `$env:SITE_URL = 'https://your-project.pages.dev'
 
 Each page and concept is available beneath both locale prefixes.
 
-| Route under `/en/` or `/pl/` | Function |
+| Route under each locale prefix | Function |
 | --- | --- |
 | Home | Studio introduction, featured work, services, stack, process, and contact |
 | `services/` | All seven service descriptions |
@@ -59,6 +59,7 @@ Demo changes exist only in React state for the current page visit. AI Desk class
 - `app/` contains static routes, locale layouts, metadata, robots, and sitemap.
 - `components/` contains the marketing layout, contact form, and interactive demo workspaces.
 - `lib/content.ts` and `lib/demo-data.ts` contain studio content and sample fixtures.
+- `lib/localization.ts` defines supported languages and locale formatting. The catalogs in `lib/translations/` provide French, German, Spanish, and Italian copy for the original English and Polish strings.
 - `public/mark.svg` is the geometric monogram used for the header and favicon.
 
 To introduce persistent applications later, move the demo operations into a data layer backed by a Node.js API or Supabase. Add authentication, authorize writes server-side, apply row-level security for Supabase data, and keep privileged keys in server-side configuration. The marketing site can continue to deploy as a static export.

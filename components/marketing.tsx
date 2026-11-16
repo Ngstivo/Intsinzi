@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Boxes, CalendarDays, Check, Code2, Database, Globe2, LayoutDashboard, Layers3, Plug, Sparkles, Users, Workflow } from "lucide-react";
 import type { CSSProperties } from "react";
 import { email, assetHref, pageHref, pages, principles, developmentSteps, projects, services, tr, type Lang, type Pair, type Project } from "../lib/content";
+import { locales } from "../lib/localization";
 import { ContactForm } from "./contact";
 import { Header } from "./header";
 
@@ -27,13 +28,14 @@ function Chart() {
 }
 
 function HeroPreview({lang}: {lang:Lang}) {
-  const metrics = [{label:["Pipeline value","Wartość szans"],value:"84,500 PLN"},{label:["Open deals","Otwarte szanse"],value:"12"},{label:["Follow-ups","Zadania"],value:"04"}] as const;
+  const metrics = [{label:["Pipeline value","Wartość szans"],value:`${new Intl.NumberFormat(locales[lang].region,{useGrouping:"always"}).format(84500)} PLN`},{label:["Open deals","Otwarte szanse"],value:"12"},{label:["Follow-ups","Zadania"],value:"04"}] as const;
+  const monthFormat=new Intl.DateTimeFormat(locales[lang].region,{month:"short",timeZone:"UTC"});
   return <a className="hero-preview" href={pageHref(lang,"work/clientflow")} aria-label={tr(lang,["Open the ClientFlow CRM demo","Otwórz demonstrację ClientFlow CRM"])}>
     <div className="window-top"><span className="dots"><i/><i/><i/></span><span>ClientFlow CRM</span><ArrowUpRight size={15}/></div>
     <div className="mock-layout"><div className="mock-rail"><span><LayoutDashboard/></span><Users/><Workflow/><CalendarDays/></div><div className="mock-body">
       <div className="mock-title"><div><small>CLIENTFLOW CRM</small><strong>{tr(lang,["Sales overview","Przegląd sprzedaży"])}</strong></div><span className="demo-chip">{tr(lang,["Concept demo","Demonstracja"])}</span></div>
       <div className="mock-metrics">{metrics.map(m=><div key={m.value}><small>{tr(lang,m.label)}</small><strong>{m.value}</strong></div>)}</div>
-      <div className="mock-chart"><div><strong>{tr(lang,["Pipeline activity","Aktywność sprzedaży"])}</strong><small>{tr(lang,["Last 6 months","Ostatnie 6 miesięcy"])}</small></div><Chart/><div className="axis"><span>MAR</span><span>APR</span><span>MAY</span><span>JUN</span><span>JUL</span><span>AUG</span></div></div>
+      <div className="mock-chart"><div><strong>{tr(lang,["Pipeline activity","Aktywność sprzedaży"])}</strong><small>{tr(lang,["Last 6 months","Ostatnie 6 miesięcy"])}</small></div><Chart/><div className="axis">{Array.from({length:6},(_,i)=><span key={i}>{monthFormat.format(new Date(Date.UTC(2026,i+2,1)))}</span>)}</div></div>
       <div className="mock-foot"><span><i/>{tr(lang,["Sample workspace","Przykładowe dane"])}</span><span>{tr(lang,["Open interactive demo","Otwórz demonstrację"])} <ArrowUpRight size={12}/></span></div>
     </div></div>
   </a>;
@@ -100,7 +102,7 @@ export function InnerPage({lang,id}: {lang:Lang;id:typeof pages[number]["id"]}) 
       {id==="work" && <Projects lang={lang}/>}
       {id==="services" && <Services lang={lang} full/>}
       {id==="about" && <><Principles lang={lang}/><section className="section"><SectionHead lang={lang} tag={["Process","Proces"]} title={["How we work.","Jak pracujemy."]}/><Process lang={lang}/></section></>}
-      {id==="pricing" && <div className="price-grid">{pricing.map(p=><article className="panel price-card" key={p.price}><h2>{tr(lang,p.name)}</h2><p>{tr(lang,["From","Od"])} <strong>{new Intl.NumberFormat(lang==="pl"?"pl-PL":"en-GB",{useGrouping:"always"}).format(p.price)} PLN</strong></p><a className="text-link" href={pageHref(lang,"contact")}>{tr(lang,["Discuss your project","Porozmawiajmy o projekcie"])}<ArrowRight size={17}/></a></article>)}</div>}
+      {id==="pricing" && <div className="price-grid">{pricing.map(p=><article className="panel price-card" key={p.price}><h2>{tr(lang,p.name)}</h2><p>{tr(lang,["From","Od"])} <strong>{new Intl.NumberFormat(locales[lang].region,{useGrouping:"always"}).format(p.price)} PLN</strong></p><a className="text-link" href={pageHref(lang,"contact")}>{tr(lang,["Discuss your project","Porozmawiajmy o projekcie"])}<ArrowRight size={17}/></a></article>)}</div>}
       {id==="contact" && <div className="contact-layout"><aside className="panel contact-aside"><h2>{tr(lang,["Email the studio","Napisz do studia"])}</h2><a href={`mailto:${email}`}>{email}</a><p><Globe2 size={16}/>{tr(lang,["Poland · Europe · Worldwide","Polska · Europa · cały świat"])}</p></aside><ContactForm lang={lang}/></div>}
     </div>{id!=="contact" && <Cta lang={lang}/>}</Frame>;
 }

@@ -1,6 +1,5 @@
-export type Lang = "en" | "pl";
-export type Pair = readonly [string, string];
-export const tr = (lang: Lang, value: Pair) => value[lang === "pl" ? 1 : 0];
+import type { Lang } from "./localization";
+export { tr, type Lang, type Pair } from "./localization";
 export const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 export const assetHref = (path: string) => basePath + path;
 export const pageHref = (lang: Lang, page = "") => `${basePath}/${lang}/${page ? page + "/" : ""}`;

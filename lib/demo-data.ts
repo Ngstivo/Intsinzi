@@ -1,9 +1,9 @@
 export const stages=[["New","Nowy"],["Qualified","Zakwalifikowany"],["Proposal","Oferta"],["Won","Wygrany"]] as const;
 export const initialLeads=[
-  {id:1,name:"Marta Zielińska",company:"Example Company A",stage:2,value:24000,followUp:"Review proposal"},
-  {id:2,name:"Tomasz Nowak",company:"Example Company B",stage:1,value:18500,followUp:"Schedule discovery"},
-  {id:3,name:"Anika Weber",company:"Example Company C",stage:0,value:12000,followUp:"Send introduction"},
-  {id:4,name:"Piotr Kowalski",company:"Example Company D",stage:3,value:30000,followUp:""},
+  {id:1,name:"Marta Zielińska",company:"Example Company A",stage:2,value:24000,followUp:["Review proposal","Przejrzyj ofertę"] as const},
+  {id:2,name:"Tomasz Nowak",company:"Example Company B",stage:1,value:18500,followUp:["Schedule discovery","Zaplanuj rozmowę"] as const},
+  {id:3,name:"Anika Weber",company:"Example Company C",stage:0,value:12000,followUp:["Send introduction","Wyślij wprowadzenie"] as const},
+  {id:4,name:"Piotr Kowalski",company:"Example Company D",stage:3,value:30000,followUp:null},
 ];
 export const appointmentTypes=[["Consultation","Konsultacja"],["Project review","Przegląd projektu"],["Intro call","Rozmowa wstępna"]] as const;
 export const timeSlots=["09:00","10:00","11:30","13:00","14:30","16:00"];
@@ -20,7 +20,7 @@ export const initialProducts=[
   {id:4,sku:"ACC-091",name:["Wireless Keyboard","Klawiatura bezprzewodowa"] as const,stock:4,reorder:8},
 ];
 export const articles=[
-  {title:["Returns policy","Zasady zwrotów"],body:["Unused sample orders can be returned within 30 days. Ask for an order number and preferred resolution.","Nieużywane produkty można zwrócić w ciągu 30 dni. Poproś o numer zamówienia i preferowane rozwiązanie."],keywords:/return|refund|zwrot|odda|money/i},
-  {title:["Delivery windows","Terminy dostaw"],body:["Standard delivery takes 2–4 business days. Ask for the tracking reference if the package is overdue.","Standardowa dostawa trwa 2–4 dni robocze. Poproś o numer śledzenia, jeśli przesyłka jest opóźniona."],keywords:/delivery|ship|track|dostaw|przesył/i},
-  {title:["Account access","Dostęp do konta"],body:["Use the password reset link on the sign-in page. A support agent can review cases where the reset email fails.","Skorzystaj z linku resetowania hasła na stronie logowania. Pracownik wsparcia może sprawdzić przypadki, gdy e-mail nie dociera."],keywords:/account|login|password|konto|hasł/i},
+  {title:["Returns policy","Zasady zwrotów"],body:["Unused sample orders can be returned within 30 days. Ask for an order number and preferred resolution.","Nieużywane produkty można zwrócić w ciągu 30 dni. Poproś o numer zamówienia i preferowane rozwiązanie."],keywords:/return|refund|zwrot|odda|money|retour|rembours|rückgab|zurückgeb|rückerstat|devolu|devolv|reembols|\breso\b|restitu|rimbors/i},
+  {title:["Delivery windows","Terminy dostaw"],body:["Standard delivery takes 2–4 business days. Ask for the tracking reference if the package is overdue.","Standardowa dostawa trwa 2–4 dni robocze. Poproś o numer śledzenia, jeśli przesyłka jest opóźniona."],keywords:/delivery|ship|track|dostaw|przesył|livraison|colis|liefer|versand|sendungsverfolg|entrega|envío|seguimiento|consegn|spedizion|tracciament/i},
+  {title:["Account access","Dostęp do konta"],body:["Use the password reset link on the sign-in page. A support agent can review cases where the reset email fails.","Skorzystaj z linku resetowania hasła na stronie logowania. Pracownik wsparcia może sprawdzić przypadki, gdy e-mail nie dociera."],keywords:/account|login|password|konto|hasł|mot de passe|connexion|passwort|anmeld|contraseñ|iniciar sesión|reimpost|acceder|accedere/i},
 ] as const;

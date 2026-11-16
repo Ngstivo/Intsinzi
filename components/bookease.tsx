@@ -1,6 +1,6 @@
 "use client";
 import { useState, type FormEvent } from "react";
-import { tr, type Lang } from "../lib/content";
+import { locales, tr, type Lang } from "../lib/localization";
 import { appointmentTypes, initialAppointments, timeSlots } from "../lib/demo-data";
 import { Stats, Table, Tabs } from "./demo-ui";
 
@@ -9,10 +9,11 @@ export function BookEase({lang}:{lang:Lang}) {
   const [day,setDay]=useState(13);
   const [status,setStatus]=useState("");
   const msg=(en:string,pl:string)=>tr(lang,[en,pl]);
-  const month=new Intl.DateTimeFormat(lang==="pl"?"pl-PL":"en-GB",{month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(Date.UTC(2026,7,1)));
-  const fullDate=(d:number)=>new Intl.DateTimeFormat(lang==="pl"?"pl-PL":"en-GB",{day:"numeric",month:"short",timeZone:"UTC"}).format(new Date(Date.UTC(2026,7,d)));
+  const month=new Intl.DateTimeFormat(locales[lang].region,{month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(Date.UTC(2026,7,1)));
+  const fullDate=(d:number)=>new Intl.DateTimeFormat(locales[lang].region,{day:"numeric",month:"short",timeZone:"UTC"}).format(new Date(Date.UTC(2026,7,d)));
   const available=timeSlots.filter(t=>!bookings.some(b=>b.day===day&&b.time===t));
-  const weekdays=lang==="pl"?["Pn","Wt","Śr","Cz","Pt","So","Nd"]:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const weekdayFormat=new Intl.DateTimeFormat(locales[lang].region,{weekday:"short",timeZone:"UTC"});
+  const weekdays=Array.from({length:7},(_,i)=>weekdayFormat.format(new Date(Date.UTC(2026,7,3+i))));
   function reserve(e:FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form=e.currentTarget;
