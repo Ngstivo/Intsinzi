@@ -74,6 +74,18 @@ The function accepts browser requests from the studio’s Vercel and GitHub Page
 
 Sort the inbox by `created_at` and update `status` to `in_review`, `replied`, or `closed` as you work. Use the captured email address to respond. Only project operators can read enquiries through the dashboard.
 
+### Email notifications
+
+New enquiries are queued in the same transaction that saves them. The `intsinzi-enquiry-emails` Supabase Cron job checks for pending alerts every minute and calls the protected `send-enquiry-emails` Edge Function. Provider failures are retried with increasing delays. Existing enquiries are kept in the inbox without a retroactive mailing.
+
+Configure these Supabase Edge Function secrets:
+
+- `RESEND_API_KEY` is a Resend sending key.
+- `ENQUIRY_EMAIL_FROM` is a sender on a verified Resend domain, such as `Intsinzi Digital Studio <enquiries@your-domain.example>`.
+- `ENQUIRY_EMAIL_WORKER_KEY` is a randomly generated worker authentication value. Store the same value in Supabase Vault as `intsinzi_enquiry_email_worker_key`. Store the function URL in Vault as `intsinzi_enquiry_email_worker_url`.
+
+The recipient is `nsteveintsinzi@gmail.com`. The notification includes project details and sets the reply address to the client when possible. The database inbox and website confirmation continue to work while email setup is pending.
+
 ## Deploy from GitHub to Cloudflare Pages
 
 Create an empty GitHub repository, then run these commands from the project directory. Replace the remote with your repository URL.
