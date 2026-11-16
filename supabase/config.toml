@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.send-enquiry-emails]
 verify_jwt = false
+
+[functions.pull-enquiry-emails]
+verify_jwt = false

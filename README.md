@@ -86,6 +86,12 @@ Configure these Supabase Edge Function secrets:
 
 The recipient is `nsteveintsinzi@gmail.com`. The notification includes project details and sets the reply address to the client when possible. The database inbox and website confirmation continue to work while email setup is pending.
 
+#### Gmail delivery without a sending domain
+
+The studio can use Google Apps Script as the sender. Deploy `pull-enquiry-emails`, generate a dedicated random key for the Gmail script, and set it as the `ENQUIRY_EMAIL_PULL_KEY` Supabase secret. Make a private copy of `supabase/ops/google-apps-script/Code.gs` with the key substituted for the placeholder.
+
+In a standalone Apps Script project owned by the studio Gmail account, paste that private copy, save it, select `installIntsinziEmail`, and run it once to authorize MailApp and install the trigger. The trigger checks the same outbox every minute. It uses the Google account's send permission and can only send the prepared alert to the studio address. Keep the script private and use either Gmail or Resend as the configured delivery path to keep sender identity consistent.
+
 ## Deploy from GitHub to Cloudflare Pages
 
 Create an empty GitHub repository, then run these commands from the project directory. Replace the remote with your repository URL.
