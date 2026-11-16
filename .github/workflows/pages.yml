@@ -30,6 +30,7 @@ jobs:
         env:
           SITE_URL: ${{ steps.pages.outputs.origin }}
           NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          NEXT_PUBLIC_ENQUIRY_ENDPOINT: ${{ vars.NEXT_PUBLIC_ENQUIRY_ENDPOINT }}
           NEXT_TELEMETRY_DISABLED: '1'
       - uses: actions/upload-pages-artifact@v3
         with:

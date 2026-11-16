@@ -157,6 +157,10 @@ svg { flex-shrink:0; }
 .contact-aside p { color:var(--muted); margin-top:12px; display:flex; align-items:center; gap:8px; }
 .contact-form,.booking-form form { display:grid; gap:16px; }
 .contact-form .button,.booking-form .button { justify-self:start; }
+.enquiry-fields { display:grid; gap:16px; min-width:0; margin:0; padding:0; border:0; }
+.enquiry-status:empty { display:none; }
+.enquiry-status[data-result="saved"] { color:#91e4d2; }
+.enquiry-status[data-result="invalid"],.enquiry-status[data-result="rate"],.enquiry-status[data-result="unavailable"] { color:#ffc0c9; }
 .field-grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
 label { display:grid; gap:5px; align-content:start; font-size:13px; font-weight:600; min-width:0; }
 input,select,textarea { width:100%; min-width:0; padding:10px 11px; border-radius:7px; background:#0a1121; border:1px solid #36415e; color:var(--text); font:inherit; }

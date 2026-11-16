@@ -30,6 +30,7 @@ Open `http://127.0.0.1:3000/`. The preview serves the generated files from `out/
 | --- | --- |
 | `SITE_URL` | Public origin for canonical links, Open Graph URLs, language alternates, and sitemap entries. Set it for production. A local build can omit it and will generate an empty sitemap. |
 | `NEXT_PUBLIC_BASE_PATH` | Optional hosting path such as `/Intsinzi`, with no trailing slash. The GitHub Pages workflow sets it automatically. Leave it empty for root deployments. |
+| `NEXT_PUBLIC_ENQUIRY_ENDPOINT` | Public URL for the Supabase `submit-enquiry` Edge Function. Set it when building the production frontend. |
 | `PORT` | Optional local static preview port. Defaults to 3000. |
 | `NODE_VERSION` | Optional Cloudflare Pages build setting. Use 22 or 24. |
 
@@ -52,7 +53,7 @@ Each page and concept is available beneath both locale prefixes.
 | `work/stockpilot/` | Add and edit products, record receipts and issues, and review stock alerts and reports |
 | `work/ai-desk/` | Query sample knowledge, process a sample document, queue draft replies, and approve them |
 
-Demo changes exist only in React state for the current page visit. AI Desk classifies sample inputs using local rules and displays sample knowledge articles. The enquiry form composes a `mailto:` draft for `nsteveintsinzi@gmail.com`. The sender reviews and sends it from their email client.
+Demo changes exist only in React state for the current page visit. AI Desk classifies sample inputs using local rules and displays sample knowledge articles. With Supabase configured, enquiries go directly to the studio’s private database. Builds without an endpoint use an email draft for `nsteveintsinzi@gmail.com`.
 
 ## Source structure
 
@@ -62,7 +63,16 @@ Demo changes exist only in React state for the current page visit. AI Desk class
 - `lib/localization.ts` defines supported languages and locale formatting. The catalogs in `lib/translations/` provide French, German, Spanish, and Italian copy for the original English and Polish strings.
 - `public/mark.svg` is the geometric monogram used for the header and favicon.
 
-To introduce persistent applications later, move the demo operations into a data layer backed by a Node.js API or Supabase. Add authentication, authorize writes server-side, apply row-level security for Supabase data, and keep privileged keys in server-side configuration. The marketing site can continue to deploy as a static export.
+## Activate the Supabase enquiry inbox
+
+1. Select the studio’s Supabase project. Link the CLI and apply the tracked migration with `supabase link --project-ref <project-ref>` followed by `supabase db push`. To provision via the dashboard, run the migration once in the SQL Editor.
+2. Deploy the function with `supabase functions deploy submit-enquiry`. The repository config allows anonymous HTTP requests to this function. It validates submissions and calls a database function restricted to `service_role`. Supabase supplies `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in the Edge Function environment. Keep all privileged keys out of frontend builds.
+3. Set `NEXT_PUBLIC_ENQUIRY_ENDPOINT` to the function URL, normally `https://<project-ref>.supabase.co/functions/v1/submit-enquiry`. For Vercel static uploads, set it before rebuilding and upload the new `out/`. For GitHub Pages, add the repository Actions variable with the same name and run the Pages workflow again.
+4. Open the live contact page, submit a synthetic enquiry, and locate the matching row in **Supabase → Table Editor → project_enquiries**. The browser shows a receipt after Supabase confirms storage.
+
+The function accepts browser requests from the studio’s Vercel and GitHub Pages origins by default. Add local or custom origins through the Edge Function secret `ENQUIRY_ALLOWED_ORIGINS` as a comma-separated list of complete origins, including the ones already in use. The form validates input, rate-limits accepted submissions, and reuses the same request ID for a retry with identical data.
+
+Sort the inbox by `created_at` and update `status` to `in_review`, `replied`, or `closed` as you work. Use the captured email address to respond. Only project operators can read enquiries through the dashboard.
 
 ## Deploy from GitHub to Cloudflare Pages
 

@@ -1,0 +1,4 @@
+project_id = "intsinzi-digital-studio"
+
+[functions.submit-enquiry]
+verify_jwt = false
